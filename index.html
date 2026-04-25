@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>竹光19年教育二代畢業限定抽卡遊戲</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Cinzel:wght@700&display=swap');
+
+  :root {
+    --gold: #f5c842;
+    --gold2: #ffaa00;
+    --deep-blue: #0d1b3e;
+    --sky: #7ec8e3;
+    --light: #eef6ff;
+    --ssr-gold: #ffd700;
+    --card-glow: 0 0 30px rgba(126,200,227,0.6), 0 0 60px rgba(245,200,66,0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 60% 0%, #1a3a6e 0%, #0d1b3e 50%, #06101f 100%);
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.8) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 60%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 15%, rgba(255,255,255,0.9) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 85%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 75% 45%, rgba(255,255,255,0.7) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 28px 20px 10px;
+    width: 100%;
+  }
+
+  header h1 {
+    font-size: clamp(1rem, 3.5vw, 1.6rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, #fff 20%, var(--gold) 60%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.4;
+  }
+
+  header .subtitle {
+    font-size: 0.75rem;
+    color: var(--sky);
+    margin-top: 4px;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px 20px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  /* Cover card */
+  #cover-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  #cover-card {
+    width: min(240px, 60vw);
+    border-radius: 18px;
+    box-shadow: var(--card-glow);
+    animation: sway 3s ease-in-out infinite;
+    display: block;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2.5deg) translateY(0px); }
+    50% { transform: rotate(2.5deg) translateY(-8px); }
+  }
+
+  /* Draw button */
+  #draw-btn {
+    background: linear-gradient(135deg, #f5c842, #f09b20);
+    color: #0d1b3e;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    padding: 14px 44px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.5);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.1em;
+  }
+  #draw-btn:hover { transform: scale(1.06); box-shadow: 0 6px 28px rgba(245,200,66,0.7); }
+  #draw-btn:active { transform: scale(0.97); }
+
+  /* Normal result */
+  #result-wrap {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    animation: revealResult 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+
+  @keyframes revealResult {
+    from { opacity: 0; transform: scale(0.7) rotateY(90deg); }
+    to { opacity: 1; transform: scale(1) rotateY(0deg); }
+  }
+
+  #result-card-img {
+    width: min(260px, 70vw);
+    border-radius: 18px;
+    box-shadow: var(--card-glow);
+    display: block;
+  }
+
+  #result-text-box {
+    background: rgba(13,27,62,0.85);
+    border: 1px solid rgba(126,200,227,0.35);
+    border-radius: 16px;
+    padding: 18px 24px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+
+  #result-subject {
+    font-size: 0.75rem;
+    color: var(--sky);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+
+  #result-teacher {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  #result-quote {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #ddf;
+    white-space: pre-line;
+  }
+
+  .rarity-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+  }
+  .rarity-R { background: rgba(126,200,227,0.2); color: var(--sky); border: 1px solid var(--sky); }
+  .rarity-SSR {
+    background: linear-gradient(135deg, #8b6914, #ffd700, #8b6914);
+    color: #1a0a00;
+    border: none;
+    animation: ssrBadgePulse 1.5s ease-in-out infinite;
+  }
+  @keyframes ssrBadgePulse {
+    0%,100% { box-shadow: 0 0 6px rgba(255,215,0,0.6); }
+    50% { box-shadow: 0 0 16px rgba(255,215,0,1); }
+  }
+
+  /* SSR card special styling */
+  #result-card-img.ssr-card {
+    box-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,165,0,0.5), 0 0 120px rgba(255,215,0,0.3);
+    animation: ssrCardFloat 2s ease-in-out infinite;
+  }
+  @keyframes ssrCardFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  #result-text-box.ssr-box {
+    background: rgba(30,15,0,0.9);
+    border: 1px solid rgba(255,215,0,0.6);
+    box-shadow: inset 0 0 20px rgba(255,215,0,0.1);
+  }
+
+  /* Redraw button */
+  #redraw-btn {
+    background: transparent;
+    color: var(--sky);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 10px 32px;
+    border: 2px solid var(--sky);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.08em;
+  }
+  #redraw-btn:hover { background: var(--sky); color: var(--deep-blue); }
+
+  /* ===== SSR FULLSCREEN EFFECT ===== */
+  #ssr-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #ssr-overlay.active { display: flex; }
+
+  /* Gold burst rays */
+  #ssr-rays {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .ray {
+    position: absolute;
+    width: 3px;
+    height: 60vmax;
+    background: linear-gradient(to bottom, rgba(255,215,0,0.9), transparent);
+    transform-origin: top center;
+    top: 50%;
+    left: 50%;
+    margin-left: -1.5px;
+    animation: rayRotate 4s linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes rayRotate {
+    from { transform: rotate(var(--start-angle)); opacity: 0.8; }
+    to { transform: rotate(calc(var(--start-angle) + 360deg)); opacity: 0.8; }
+  }
+
+  #ssr-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, #fff8dc 0%, #ffd700 30%, #ff8c00 60%, transparent 100%);
+    animation: flashBurst 0.6s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes flashBurst {
+    0% { opacity: 1; transform: scale(0); }
+    50% { opacity: 0.9; transform: scale(2); }
+    100% { opacity: 0; transform: scale(4); }
+  }
+
+  #ssr-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ssr-particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: ssrParticle var(--dur) ease-out forwards;
+  }
+
+  @keyframes ssrParticle {
+    0% { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2); }
+  }
+
+  #ssr-card-reveal {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  #ssr-card-reveal.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  #ssr-card-img {
+    width: min(260px, 65vw);
+    border-radius: 18px;
+    box-shadow: 0 0 50px rgba(255,215,0,1), 0 0 100px rgba(255,165,0,0.7), 0 0 150px rgba(255,215,0,0.4);
+    animation: ssrCardPulse 1.5s ease-in-out infinite 1s;
+  }
+
+  @keyframes ssrCardPulse {
+    0%,100% { box-shadow: 0 0 50px rgba(255,215,0,1), 0 0 100px rgba(255,165,0,0.7); }
+    50% { box-shadow: 0 0 70px rgba(255,215,0,1), 0 0 140px rgba(255,165,0,0.9), 0 0 200px rgba(255,215,0,0.5); }
+  }
+
+  #ssr-label {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff8dc, #ffd700, #ff8c00, #ffd700, #fff8dc);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 2s linear infinite;
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  @keyframes shimmer {
+    from { background-position: 0% center; }
+    to { background-position: 200% center; }
+  }
+
+  #ssr-subtitle {
+    font-size: 0.85rem;
+    color: rgba(255,215,0,0.7);
+    letter-spacing: 0.1em;
+    white-space: pre-line;
+    text-align: center;
+  }
+
+  #ssr-tap-hint {
+    position: absolute;
+    bottom: 40px;
+    font-size: 0.8rem;
+    color: rgba(255,215,0,0.5);
+    animation: blink 1.5s ease-in-out infinite;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* Stars background on SSR */
+  #ssr-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ssr-star {
+    position: absolute;
+    background: #ffd700;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: starTwinkle var(--dur2) ease-in-out infinite var(--delay);
+  }
+
+  @keyframes starTwinkle {
+    0%,100% { opacity: 0.2; transform: scale(1) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+  }
+
+  /* Sparkles */
+  #sparkles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .spark {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: sparkleFly 1s ease-out forwards;
+  }
+
+  @keyframes sparkleFly {
+    0% { opacity: 1; transform: scale(1) translate(0,0); }
+    100% { opacity: 0; transform: scale(0.2) translate(var(--tx), var(--ty)); }
+  }
+
+  /* Music btn */
+  #music-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 50;
+    background: rgba(13,27,62,0.8);
+    border: 1px solid rgba(126,200,227,0.4);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+    backdrop-filter: blur(6px);
+  }
+  #music-btn:hover { border-color: var(--gold); transform: scale(1.1); }
+
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    font-size: 0.72rem;
+    color: rgba(126,200,227,0.6);
+    padding: 12px 20px 20px;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div id="sparkles"></div>
+
+<!-- SSR Fullscreen Overlay -->
+<div id="ssr-overlay">
+  <div id="ssr-stars"></div>
+  <div id="ssr-rays"></div>
+  <div id="ssr-particles"></div>
+  <div id="ssr-flash"></div>
+  <div id="ssr-card-reveal">
+    <img id="ssr-card-img" src="" alt="SSR卡">
+    <div id="ssr-label"></div>
+    <div id="ssr-subtitle"></div>
+  </div>
+  <div id="ssr-tap-hint">✦ 點擊任意處繼續 ✦</div>
+</div>
+
+<button id="music-btn" title="音樂開關">🎵</button>
+
+<header>
+  <h1>竹光19年教育二代<br>畢業限定抽卡遊戲</h1>
+  <p class="subtitle">✦ Zhuguang Graduation Card Draw ✦</p>
+</header>
+
+<main>
+  <div id="cover-wrap">
+    <img id="cover-card" src="images/cover.png" alt="卡牌封面">
+    <button id="draw-btn" onclick="drawCard()">✨ 抽一張 ✨</button>
+  </div>
+
+  <div id="result-wrap">
+    <img id="result-card-img" src="" alt="抽到的卡">
+    <div id="result-text-box">
+      <div id="result-rarity" class="rarity-badge rarity-R">R</div>
+      <div id="result-subject"></div>
+      <div id="result-teacher"></div>
+      <div id="result-quote"></div>
+    </div>
+    <button id="redraw-btn" onclick="resetToCover()">🔄 再抽一次</button>
+  </div>
+</main>
+
+<footer>
+  竹光19年教育二代畢業限定抽卡遊戲，開放時間為6/4~6/7。
+</footer>
+
+<script>
+// =============================================
+// 卡牌資料設定區（之後新增卡片在這裡修改）
+// =============================================
+const CARDS = [
+  // R 卡 - 老師卡（機率各約 11.875%，合計 95%）
+  { rarity: "R", img: "images/1.png", subject: "英語", teacher: "若菁老師", text: "許願卡一張" },
+  { rarity: "R", img: "images/2.png", subject: "表演藝術", teacher: "耘詩老師", text: "旋轉、跳躍，你閉著眼~\n大家一起fun！跟著我一起跳進來" },
+  { rarity: "R", img: "images/3.png", subject: "生活科技", teacher: "世哲老師", text: "變身機甲戰士！戰鬥模式啟動" },
+  { rarity: "R", img: "images/4.png", subject: "視覺藝術", teacher: "蒔宇老師", text: "好棒棒！！你畫的真好！" },
+  { rarity: "R", img: "images/5.png", subject: "音樂", teacher: "天玉老師", text: "董ㄘ大ㄘ董ㄘ大~   來，麥克風，唱！" },
+  { rarity: "R", img: "images/6.png", subject: "英語/寰語生活", teacher: "香伶老師", text: "這段的 topic sentence在哪裡?" },
+  { rarity: "R", img: "images/7.png", subject: "公民", teacher: "又睿老師", text: "來！小花準備一下~\n這週有什麼想要分享的國內外時事" },
+  { rarity: "R", img: "images/8.png", subject: "數學", teacher: "俊霖老師", text: "今天課就上到這裡，下課！" },
+
+  // SSR 卡（機率各 2.5%，合計 5%）
+  // ★ 新增SSR圖片後，把 images/ssr_勸導單.png 換成正式圖片即可
+  { rarity: "SSR", img: "images/ssr_勸導單.png", subject: "SSR 限定", teacher: "勸導單", text: "🚨 恭喜獲得稀有卡！\n請好好珍惜這張紀念品 😂" },
+  { rarity: "SSR", img: "images/ssr_嘉獎.png", subject: "SSR 限定", teacher: "嘉獎", text: "🏆 恭喜獲得稀有卡！\n你真的很棒，老師們都看到了！" },
+];
+
+// 抽卡機率設定
+// SSR 總機率 = 5%，R 總機率 = 95%
+// 同稀有度內各卡片機率相等
+const SSR_RATE = 0.05;
+
+// =============================================
+
+let drawnHistory = [];
+let audioCtx = null;
+let musicPlaying = false;
+let musicNodes = [];
+let ssrCallback = null;
+
+// ---- 音樂 ----
+function startMusic() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (musicPlaying) return;
+  musicPlaying = true;
+  playAnimeTheme();
+}
+
+function stopMusic() {
+  musicNodes.forEach(n => { try { n.stop(); } catch(e){} });
+  musicNodes = [];
+  musicPlaying = false;
+}
+
+function playAnimeTheme() {
+  if (!audioCtx || !musicPlaying) return;
+  const BPM = 132;
+  const beat = 60 / BPM;
+  const melody = [
+    [523.25,1],[587.33,0.5],[659.25,0.5],[698.46,1],
+    [659.25,0.5],[587.33,0.5],[523.25,1.5],[0,0.5],
+    [440,0.5],[493.88,0.5],[523.25,0.5],[587.33,0.5],
+    [659.25,1],[587.33,0.5],[523.25,0.5],[493.88,1.5],[0,0.5],
+    [523.25,1],[659.25,1],[783.99,1],[698.46,1],
+    [659.25,0.5],[587.33,0.5],[659.25,2],
+    [587.33,1],[523.25,0.5],[493.88,0.5],[440,1],
+    [493.88,0.5],[523.25,0.5],[587.33,3],
+  ];
+  const chords = [
+    [[261.63,329.63,392],4],[[220,277.18,329.63],4],
+    [[261.63,329.63,392],4],[[174.61,220,261.63],4],
+    [[261.63,329.63,392],4],[[220,277.18,329.63],4],
+    [[196,246.94,293.66],4],[[174.61,220,261.63],4],
+  ];
+  const masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+  masterGain.connect(audioCtx.destination);
+  let t = audioCtx.currentTime + 0.1;
+  melody.forEach(([freq, dur]) => {
+    if (freq > 0) {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.7, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.01, t + dur * beat * 0.9);
+      osc.connect(g); g.connect(masterGain);
+      osc.start(t); osc.stop(t + dur * beat);
+      musicNodes.push(osc);
+    }
+    t += dur * beat;
+  });
+  let ct = audioCtx.currentTime + 0.1;
+  chords.forEach(([freqs, dur]) => {
+    freqs.forEach(freq => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ct);
+      g.gain.setValueAtTime(0, ct);
+      g.gain.linearRampToValueAtTime(0.15, ct + 0.1);
+      g.gain.exponentialRampToValueAtTime(0.01, ct + dur * beat * 0.95);
+      osc.connect(g); g.connect(masterGain);
+      osc.start(ct); osc.stop(ct + dur * beat);
+      musicNodes.push(osc);
+    });
+    ct += dur * beat;
+  });
+  const totalDur = melody.reduce((s,[,d]) => s + d, 0) * beat * 1000;
+  setTimeout(() => { if (musicPlaying) playAnimeTheme(); }, totalDur + 200);
+}
+
+document.getElementById('music-btn').addEventListener('click', () => {
+  if (musicPlaying) {
+    stopMusic();
+    document.getElementById('music-btn').textContent = '🔇';
+  } else {
+    startMusic();
+    document.getElementById('music-btn').textContent = '🎵';
+  }
+});
+
+// ---- 粒子特效 ----
+function spawnSparkles(x, y) {
+  const container = document.getElementById('sparkles');
+  const colors = ['#f5c842','#fff','#7ec8e3','#ff9de2','#a0f0a0'];
+  for (let i = 0; i < 20; i++) {
+    const s = document.createElement('div');
+    s.className = 'spark';
+    const angle = Math.random() * 360;
+    const dist = 60 + Math.random() * 120;
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.background = colors[Math.floor(Math.random() * colors.length)];
+    s.style.setProperty('--tx', Math.cos(angle * Math.PI/180) * dist + 'px');
+    s.style.setProperty('--ty', Math.sin(angle * Math.PI/180) * dist + 'px');
+    s.style.width = s.style.height = (4 + Math.random() * 6) + 'px';
+    container.appendChild(s);
+    setTimeout(() => s.remove(), 1100);
+  }
+}
+
+// ---- SSR 全螢幕特效 ----
+function buildSSROverlay() {
+  // Stars
+  const starsEl = document.getElementById('ssr-stars');
+  starsEl.innerHTML = '';
+  for (let i = 0; i < 24; i++) {
+    const star = document.createElement('div');
+    star.className = 'ssr-star';
+    const size = 8 + Math.random() * 20;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --dur2:${1.5 + Math.random()*2}s;
+      --delay:${Math.random()*2}s;
+    `;
+    starsEl.appendChild(star);
+  }
+
+  // Rays
+  const raysEl = document.getElementById('ssr-rays');
+  raysEl.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const ray = document.createElement('div');
+    ray.className = 'ray';
+    ray.style.setProperty('--start-angle', (i * 22.5) + 'deg');
+    ray.style.animationDuration = (3 + Math.random() * 2) + 's';
+    raysEl.appendChild(ray);
+  }
+}
+
+function showSSREffect(card) {
+  buildSSROverlay();
+
+  document.getElementById('ssr-card-img').src = card.img;
+  document.getElementById('ssr-label').textContent = '✦ ' + card.teacher + ' ✦';
+  document.getElementById('ssr-subtitle').textContent = card.text;
+
+  const overlay = document.getElementById('ssr-overlay');
+  overlay.classList.add('active');
+
+  // Spawn gold particles
+  const particlesEl = document.getElementById('ssr-particles');
+  particlesEl.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'ssr-particle';
+    const size = 4 + Math.random() * 10;
+    const colors = ['#ffd700','#ffaa00','#fff8dc','#ff8c00','#fffacd'];
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:50%; top:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --tx:${(Math.random()-0.5)*200}vw;
+      --ty:${(Math.random()-0.5)*200}vh;
+      --dur:${0.8 + Math.random()*1.2}s;
+    `;
+    particlesEl.appendChild(p);
+  }
+
+  // Reveal card after flash
+  setTimeout(() => {
+    document.getElementById('ssr-card-reveal').classList.add('show');
+  }, 700);
+
+  // Click to dismiss
+  overlay.addEventListener('click', dismissSSR, { once: true });
+}
+
+function dismissSSR() {
+  const overlay = document.getElementById('ssr-overlay');
+  overlay.classList.remove('active');
+  document.getElementById('ssr-card-reveal').classList.remove('show');
+
+  // Show normal result panel
+  if (ssrCallback) {
+    ssrCallback();
+    ssrCallback = null;
+  }
+}
+
+// ---- 抽卡邏輯 ----
+function pickCard() {
+  const rand = Math.random();
+  const ssrCards = CARDS.filter(c => c.rarity === 'SSR');
+  const rCards   = CARDS.filter(c => c.rarity === 'R');
+
+  if (rand < SSR_RATE && ssrCards.length > 0) {
+    // Pick random SSR
+    return ssrCards[Math.floor(Math.random() * ssrCards.length)];
+  } else {
+    // Pick random R (avoid immediate repeat)
+    let idx;
+    const lastIdx = drawnHistory[drawnHistory.length - 1];
+    do { idx = Math.floor(Math.random() * rCards.length); }
+    while (rCards.length > 1 && rCards[idx] === lastIdx);
+    drawnHistory.push(rCards[idx]);
+    return rCards[idx];
+  }
+}
+
+function showResultPanel(card) {
+  document.getElementById('result-card-img').src = card.img;
+  document.getElementById('result-card-img').className = card.rarity === 'SSR' ? 'ssr-card' : '';
+
+  const rarityEl = document.getElementById('result-rarity');
+  rarityEl.textContent = card.rarity;
+  rarityEl.className = 'rarity-badge rarity-' + card.rarity;
+
+  document.getElementById('result-subject').textContent = card.subject;
+  document.getElementById('result-teacher').textContent = card.teacher;
+  document.getElementById('result-quote').textContent = card.text;
+
+  const textBox = document.getElementById('result-text-box');
+  textBox.className = card.rarity === 'SSR' ? 'ssr-box' : '';
+
+  document.getElementById('cover-wrap').style.display = 'none';
+  const rw = document.getElementById('result-wrap');
+  rw.style.display = 'flex';
+  rw.style.animation = 'none';
+  rw.offsetHeight;
+  rw.style.animation = '';
+}
+
+function drawCard() {
+  if (!musicPlaying) startMusic();
+
+  const btn = document.getElementById('draw-btn');
+  const rect = btn.getBoundingClientRect();
+  spawnSparkles(rect.left + rect.width/2, rect.top + rect.height/2);
+
+  const card = pickCard();
+
+  if (card.rarity === 'SSR') {
+    // Hide cover, show SSR overlay first
+    document.getElementById('cover-wrap').style.display = 'none';
+    ssrCallback = () => showResultPanel(card);
+    showSSREffect(card);
+  } else {
+    showResultPanel(card);
+  }
+}
+
+function resetToCover() {
+  document.getElementById('result-wrap').style.display = 'none';
+  document.getElementById('cover-wrap').style.display = 'flex';
+}
+</script>
+</body>
+</html>
